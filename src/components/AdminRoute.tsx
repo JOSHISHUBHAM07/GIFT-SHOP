@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 // REPLACE THIS WITH YOUR EXACT EMAIL USED IN SUPABASE
-const ADMIN_EMAIL = "your_email@example.com";
+const ADMIN_EMAIL = "sj657382@gmail.com";
 
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<any>(null);
