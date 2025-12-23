@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom"; // <--- Added Link for navigation
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image (Fixed with reliable URL) */}
+      {/* Background Image - Static on mobile, animated on desktop */}
       <motion.div
         className="absolute inset-0"
         initial={{ scale: 1.1 }}
@@ -16,16 +16,15 @@ const Hero = () => {
         <img
           src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop"
           alt="Luxury Gift Shop"
-          className="w-full h-full object-cover opacity-60" // Reduced opacity slightly for better text contrast
+          className="w-full h-full object-cover opacity-60"
         />
-        {/* Gradients for text readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/20" />
       </motion.div>
 
-      {/* Floating decorative elements */}
+      {/* --- OPTIMIZATION: Hidden on mobile (hidden md:block) to prevent lag --- */}
       <motion.div
-        className="absolute top-1/4 right-1/4 w-64 h-64 rounded-full bg-primary/20 blur-[100px]"
+        className="hidden md:block absolute top-1/4 right-1/4 w-64 h-64 rounded-full bg-primary/20 blur-[100px]"
         animate={{
           y: [0, -20, 0],
           scale: [1, 1.1, 1],
@@ -33,13 +32,14 @@ const Hero = () => {
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
-        className="absolute bottom-1/4 left-1/4 w-96 h-96 rounded-full bg-primary/10 blur-[120px]"
+        className="hidden md:block absolute bottom-1/4 left-1/4 w-96 h-96 rounded-full bg-primary/10 blur-[120px]"
         animate={{
           y: [0, 20, 0],
           scale: [1, 0.9, 1],
         }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
       />
+      {/* ------------------------------------------------------------------- */}
 
       {/* Content */}
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
@@ -104,7 +104,8 @@ const Hero = () => {
               </motion.div>
             </Link>
 
-            <Link to="/products">
+            {/* Changed to Auth to support Login First flow */}
+            <Link to="/auth">
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -114,7 +115,7 @@ const Hero = () => {
                   variant="outline"
                   className="rounded-full px-8 h-14 text-base border-2 bg-transparent hover:bg-white/5 backdrop-blur-sm"
                 >
-                  View Categories
+                  Sign In
                 </Button>
               </motion.div>
             </Link>
@@ -122,7 +123,7 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator - Hidden on mobile landscape or short screens if needed, but usually fine */}
       <motion.div
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
         initial={{ opacity: 0 }}

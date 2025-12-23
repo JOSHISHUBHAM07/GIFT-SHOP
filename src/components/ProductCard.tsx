@@ -28,9 +28,25 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   const [wishlistLoading, setWishlistLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  // --- UPDATED: Force Login on Add to Cart ---
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // 1. Check if user is logged in
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      toast.error("Please login to shop", {
+        description: "You need an account to add items to your cart.",
+      });
+      navigate("/auth"); // Redirect to login
+      return;
+    }
+
+    // 2. Add to Cart (Only if logged in)
     addItem({ ...product, quantity: 1 });
     toast.success(`${product.name} added to cart`);
     openCart();

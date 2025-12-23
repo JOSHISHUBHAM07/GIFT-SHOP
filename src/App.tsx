@@ -1,14 +1,17 @@
 import { lazy, Suspense } from "react";
-import { Toaster } from "@/components/ui/toaster"; // Standard Toaster
-import { Toaster as Sonner } from "@/components/ui/sonner"; // Sonner Toaster
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Loader2 } from "lucide-react";
 
-// --- LAZY IMPORTS (Optimization) ---
-// These pages are only loaded when the user visits them
+// Guards
+import ProtectedRoute from "@/components/ProtectedRoute";
+import AdminRoute from "@/components/AdminRoute"; // <--- Import Admin Guard
+
+// --- LAZY IMPORTS ---
 const Index = lazy(() => import("./pages/Index"));
 const Products = lazy(() => import("./pages/Products"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
@@ -23,11 +26,11 @@ const Wishlist = lazy(() => import("./pages/Wishlist"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Account = lazy(() => import("./pages/Account"));
 const Privacy = lazy(() => import("./pages/Privacy"));
-const Terms = lazy(() => import("./pages/Terms")); // <--- Included your new page
+const Terms = lazy(() => import("./pages/Terms"));
 
 const queryClient = new QueryClient();
 
-// Loading Spinner Component
+// Loading Spinner
 const PageLoader = () => (
   <div className="h-screen w-full flex items-center justify-center bg-background text-primary">
     <div className="flex flex-col items-center gap-4">
@@ -41,36 +44,69 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <HelmetProvider>
       <TooltipProvider>
-        {/* Toast Notifications */}
         <Toaster />
         <Sonner />
 
         <BrowserRouter>
-          {/* Suspense handles the loading state while lazy pages download */}
           <Suspense fallback={<PageLoader />}>
             <Routes>
-              {/* Main Routes */}
+              {/* Public Routes */}
               <Route path="/" element={<Index />} />
               <Route path="/products" element={<Products />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/contact" element={<Contact />} />
-
-              {/* Feature Routes */}
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/auth" element={<Auth />} />
-              <Route path="/account" element={<Account />} />
 
               {/* Legal Pages */}
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
 
-              {/* Admin Routes */}
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/admin/*" element={<Admin />} />
+              {/* --- PROTECTED ROUTES (Login Required) --- */}
+              <Route
+                path="/checkout"
+                element={
+                  <ProtectedRoute>
+                    <Checkout />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/wishlist"
+                element={
+                  <ProtectedRoute>
+                    <Wishlist />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/account"
+                element={
+                  <ProtectedRoute>
+                    <Account />
+                  </ProtectedRoute>
+                }
+              />
 
-              {/* 404 - Keep this last */}
+              {/* --- ADMIN ROUTES (Admin Email Required) --- */}
+              <Route
+                path="/admin"
+                element={
+                  <AdminRoute>
+                    <Admin />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/*"
+                element={
+                  <AdminRoute>
+                    <Admin />
+                  </AdminRoute>
+                }
+              />
+
+              {/* 404 */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
