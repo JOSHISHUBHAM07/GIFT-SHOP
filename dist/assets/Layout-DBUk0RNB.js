@@ -1,0 +1,1 @@
+import{j as s}from"./index-L5qlGLpf.js";import{N as a,C as o,F as e}from"./CartDrawer-BNY1Fyqk.js";const n=({children:r})=>s.jsxs("div",{className:"min-h-screen bg-background text-foreground font-body flex flex-col",children:[s.jsx(a,{}),s.jsx(o,{}),s.jsx("main",{className:"flex-1 pt-24",children:r}),s.jsx(e,{})]});export{n as L};

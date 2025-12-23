@@ -1,74 +1,68 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Heart, ShoppingBag, X, Share2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ShoppingBag, X, Heart, Loader2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/layout/Layout";
-
-interface WishlistItem {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  inStock: boolean;
-}
-
-const initialWishlist: WishlistItem[] = [
-  {
-    id: 1,
-    name: "Cashmere Blend Coat",
-    price: 495,
-    image: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=400&h=500&fit=crop",
-    inStock: true,
-  },
-  {
-    id: 2,
-    name: "Silk Blend Scarf",
-    price: 128,
-    image: "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?w=400&h=500&fit=crop",
-    inStock: true,
-  },
-  {
-    id: 3,
-    name: "Leather Crossbody Bag",
-    price: 285,
-    image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=500&fit=crop",
-    inStock: false,
-  },
-  {
-    id: 4,
-    name: "Wool Blend Beanie",
-    price: 58,
-    image: "https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=400&h=500&fit=crop",
-    inStock: true,
-  },
-];
+import { supabase } from "@/supabaseClient";
+import { useCartStore } from "@/store/cartStore";
+import { toast } from "sonner";
 
 const Wishlist = () => {
-  const [wishlist, setWishlist] = useState<WishlistItem[]>(initialWishlist);
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { addItem } = useCartStore();
+  const navigate = useNavigate();
 
-  const removeItem = (id: number) => {
-    setWishlist((items) => items.filter((item) => item.id !== id));
+  useEffect(() => {
+    fetchWishlist();
+  }, []);
+
+  const fetchWishlist = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      setLoading(false);
+      return; // Show empty state if not logged in
+    }
+
+    try {
+      // Fetch wishlist items AND the related product data
+      const { data, error } = await supabase
+        .from("wishlist")
+        .select("*, products(*)") // Join with products table
+        .eq("user_id", session.user.id);
+
+      if (error) throw error;
+      setItems(data || []);
+    } catch (error) {
+      console.error("Error loading wishlist:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (wishlist.length === 0) {
+  const removeFromWishlist = async (id: number) => {
+    const { error } = await supabase.from("wishlist").delete().eq("id", id); // Delete by wishlist ID
+
+    if (!error) {
+      setItems(items.filter((item) => item.id !== id));
+      toast.success("Removed from wishlist");
+    }
+  };
+
+  const moveToCart = (item: any) => {
+    addItem({ ...item.products, quantity: 1 }); // item.products contains the joined product data
+    toast.success("Added to cart");
+    removeFromWishlist(item.id);
+  };
+
+  if (loading) {
     return (
       <Layout>
-        <div className="container py-20 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-md mx-auto"
-          >
-            <Heart className="h-16 w-16 mx-auto text-muted-foreground mb-6" />
-            <h1 className="font-display text-3xl mb-4">Your wishlist is empty</h1>
-            <p className="text-muted-foreground mb-8">
-              Save your favorite items to purchase later.
-            </p>
-            <Link to="/">
-              <Button size="lg">Start Shopping</Button>
-            </Link>
-          </motion.div>
+        <div className="h-[60vh] flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       </Layout>
     );
@@ -76,65 +70,64 @@ const Wishlist = () => {
 
   return (
     <Layout>
-      <div className="container py-8 md:py-12">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <h1 className="font-display text-3xl md:text-4xl">My Wishlist</h1>
-            <p className="text-muted-foreground mt-2">{wishlist.length} items saved</p>
-          </motion.div>
-          <Button variant="outline" size="sm">
-            <Share2 className="h-4 w-4 mr-2" />
-            Share Wishlist
-          </Button>
-        </div>
+      <div className="container mx-auto px-4 py-12 max-w-6xl">
+        <h1 className="font-display text-4xl font-bold mb-8 flex items-center gap-3">
+          <Heart className="h-8 w-8 text-primary fill-primary" />
+          My Wishlist
+        </h1>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {wishlist.map((item, index) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="group relative"
-            >
-              <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-muted">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <button
-                  onClick={() => removeItem(item.id)}
-                  className="absolute top-3 right-3 w-8 h-8 bg-background/90 backdrop-blur rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+        {items.length === 0 ? (
+          <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10">
+            <Heart className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-50" />
+            <h2 className="text-2xl font-bold mb-2">Your wishlist is empty</h2>
+            <p className="text-muted-foreground mb-6">
+              Save items you love to revisit them later.
+            </p>
+            <Button onClick={() => navigate("/products")}>
+              Start Shopping
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <AnimatePresence>
+              {items.map((item) => (
+                <motion.div
+                  key={item.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="bg-card border border-white/5 rounded-2xl overflow-hidden group"
                 >
-                  <X className="h-4 w-4" />
-                </button>
-                {!item.inStock && (
-                  <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
-                    <span className="px-3 py-1.5 bg-background text-sm font-medium rounded-md">
-                      Out of Stock
-                    </span>
+                  <div className="relative aspect-square">
+                    <img
+                      src={item.products.image}
+                      alt={item.products.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      onClick={() => removeFromWishlist(item.id)}
+                      className="absolute top-3 right-3 p-2 bg-black/50 backdrop-blur rounded-full text-white hover:bg-red-500 transition-colors"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
                   </div>
-                )}
-              </div>
-              <div className="mt-4">
-                <h3 className="font-medium">{item.name}</h3>
-                <p className="text-muted-foreground mt-1">${item.price.toFixed(2)}</p>
-                <Button
-                  className="w-full mt-3"
-                  variant={item.inStock ? "default" : "outline"}
-                  disabled={!item.inStock}
-                >
-                  <ShoppingBag className="h-4 w-4 mr-2" />
-                  {item.inStock ? "Add to Cart" : "Notify Me"}
-                </Button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                  <div className="p-4">
+                    <h3 className="font-medium truncate">
+                      {item.products.name}
+                    </h3>
+                    <p className="text-primary font-semibold mb-4">
+                      ${item.products.price}
+                    </p>
+                    <Button className="w-full" onClick={() => moveToCart(item)}>
+                      <ShoppingBag className="mr-2 h-4 w-4" /> Add to Cart
+                    </Button>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
       </div>
     </Layout>
   );

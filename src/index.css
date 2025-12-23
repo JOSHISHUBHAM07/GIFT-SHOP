@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,110 +6,43 @@
 
 @layer base {
   :root {
-    --background: 30 20% 98%;
-    --foreground: 220 20% 10%;
+    /* --- DARK GLOSSY THEME VARIABLES --- */
+    --background: 240 10% 4%;
+    --foreground: 0 0% 100%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 20% 10%;
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 10%;
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 350 60% 65%;
+    --primary: 280 80% 65%; /* Glowing Purple/Pink */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 180 25% 85%;
-    --secondary-foreground: 180 30% 25%;
+    --secondary: 240 10% 10%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 30 15% 94%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 240 10% 15%;
+    --muted-foreground: 240 5% 65%;
 
-    --accent: 45 80% 72%;
-    --accent-foreground: 45 80% 20%;
+    --accent: 280 80% 65%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 15% 90%;
-    --input: 30 15% 90%;
-    --ring: 350 60% 65%;
+    --border: 240 10% 15%;
+    --input: 240 10% 15%;
+    --ring: 280 80% 65%;
 
     --radius: 1rem;
 
-    /* Premium pastel tokens */
-    --blush: 350 60% 65%;
-    --blush-light: 350 60% 95%;
-    --mint: 160 40% 75%;
-    --mint-light: 160 40% 95%;
-    --lavender: 260 40% 80%;
-    --lavender-light: 260 40% 96%;
-    --cream: 45 40% 96%;
-    --peach: 25 70% 85%;
+    /* Glass Effect Tokens */
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
 
-    /* Typography */
-    --font-display: 'Playfair Display', serif;
-    --font-body: 'DM Sans', sans-serif;
-
-    /* Premium shadows */
-    --shadow-soft: 0 4px 20px -4px hsl(220 20% 10% / 0.06);
-    --shadow-hover: 0 20px 40px -12px hsl(220 20% 10% / 0.15);
-    --shadow-float: 0 30px 60px -15px hsl(220 20% 10% / 0.2);
-    --shadow-glow: 0 0 40px hsl(350 60% 65% / 0.15);
-
-    /* Glassmorphism */
-    --glass-bg: hsl(0 0% 100% / 0.7);
-    --glass-border: hsl(0 0% 100% / 0.3);
-
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 220 10% 45%;
-    --sidebar-primary: 350 60% 65%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 350 60% 95%;
-    --sidebar-accent-foreground: 220 20% 10%;
-    --sidebar-border: 30 15% 90%;
-    --sidebar-ring: 350 60% 65%;
-  }
-
-  .dark {
-    --background: 220 20% 8%;
-    --foreground: 30 20% 98%;
-
-    --card: 220 20% 12%;
-    --card-foreground: 30 20% 98%;
-
-    --popover: 220 20% 12%;
-    --popover-foreground: 30 20% 98%;
-
-    --primary: 350 55% 70%;
-    --primary-foreground: 220 20% 8%;
-
-    --secondary: 180 20% 25%;
-    --secondary-foreground: 180 30% 85%;
-
-    --muted: 220 20% 15%;
-    --muted-foreground: 30 15% 65%;
-
-    --accent: 45 70% 55%;
-    --accent-foreground: 220 20% 8%;
-
-    --destructive: 0 62% 45%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 220 20% 18%;
-    --input: 220 20% 18%;
-    --ring: 350 55% 70%;
-
-    --glass-bg: hsl(220 20% 12% / 0.7);
-    --glass-border: hsl(220 20% 20% / 0.3);
-
-    --sidebar-background: 220 20% 12%;
-    --sidebar-foreground: 30 15% 65%;
-    --sidebar-primary: 350 55% 70%;
-    --sidebar-primary-foreground: 220 20% 8%;
-    --sidebar-accent: 220 20% 15%;
-    --sidebar-accent-foreground: 30 20% 98%;
-    --sidebar-border: 220 20% 18%;
-    --sidebar-ring: 350 55% 70%;
+    --font-display: "Playfair Display", serif;
+    --font-body: "DM Sans", sans-serif;
   }
 }
 
@@ -124,68 +57,53 @@
 
   body {
     @apply bg-background text-foreground font-body antialiased;
+    /* Glowing Background Orbs */
+    background-image: radial-gradient(
+        circle at 15% 50%,
+        rgba(120, 50, 255, 0.1),
+        transparent 25%
+      ),
+      radial-gradient(
+        circle at 85% 30%,
+        rgba(255, 50, 150, 0.1),
+        transparent 25%
+      );
+    background-attachment: fixed;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
-  }
-}
-
-@layer utilities {
-  .font-display {
-    font-family: var(--font-display);
-  }
-
-  .font-body {
-    font-family: var(--font-body);
-  }
-
-  .shadow-soft {
-    box-shadow: var(--shadow-soft);
-  }
-
-  .shadow-hover {
-    box-shadow: var(--shadow-hover);
-  }
-
-  .shadow-float {
-    box-shadow: var(--shadow-float);
-  }
-
-  .shadow-glow {
-    box-shadow: var(--shadow-glow);
-  }
-
-  .glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-  }
-
-  .glass-heavy {
-    background: var(--glass-bg);
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
-    border: 1px solid var(--glass-border);
   }
 }
 
 @layer components {
-  .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-soft hover:shadow-glow;
+  /* Glassmorphism Utility */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
   }
 
-  .btn-outline-primary {
-    @apply border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300;
-  }
-
+  /* Shiny Product Cards */
   .card-product {
-    @apply bg-card rounded-2xl overflow-hidden shadow-soft transition-all duration-500;
+    @apply bg-card/50 border border-white/5 rounded-2xl overflow-hidden transition-all duration-500 relative;
+    backdrop-filter: blur(10px);
   }
 
   .card-product:hover {
-    @apply shadow-float;
+    @apply border-primary/30 shadow-[0_0_30px_rgba(168,85,247,0.15)];
     transform: translateY(-8px);
+  }
+
+  /* Glowing Buttons */
+  .btn-primary {
+    @apply bg-primary text-white hover:bg-primary/90 shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_30px_rgba(168,85,247,0.5)] transition-all duration-300;
   }
 }

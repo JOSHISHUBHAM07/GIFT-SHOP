@@ -1,30 +1,29 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/supabaseClient"; // <--- Connected to Backend
+import { supabase } from "@/supabaseClient";
 import ProductCard from "./ProductCard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, SlidersHorizontal, Loader2 } from "lucide-react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { toast } from "sonner";
 
-// We define the shape of a Product from Supabase
+// 1. Correct Interface matching your Supabase Table
 interface Product {
   id: number;
   name: string;
   price: number;
-  image_url: string;
+  image: string; // <--- FIXED: matched to DB column name
   category: string;
 }
 
-// Hardcoded categories for the filter buttons
-// (You can also fetch these from DB later if you want)
-const categories = ["All", "Mugs", "Stationery", "Decor", "Accessories"];
+// 2. Updated Categories to match your seeded data
+const categories = ["All", "Apparel", "Accessories", "Home", "Jewelry"];
 
 const FeaturedProducts = () => {
   const [activeCategory, setActiveCategory] = useState("All");
-  const [products, setProducts] = useState<Product[]>([]); // <--- Real Data State
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 1. Fetch Data from Supabase on Load
+  // Fetch Data
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -46,7 +45,7 @@ const FeaturedProducts = () => {
     }
   };
 
-  // 2. Filter the REAL data
+  // Filter Data
   const filteredProducts =
     activeCategory === "All"
       ? products
@@ -154,12 +153,12 @@ const FeaturedProducts = () => {
                   transition={{ duration: 0.3 }}
                 >
                   <ProductCard
-                    // 3. Mapping DB fields to your component props
+                    // 3. Correctly mapping the properties
                     product={{
                       id: product.id,
                       name: product.name,
                       price: product.price,
-                      image: product.image_url, // DB field is 'image_url', prop is 'image'
+                      image: product.image, // <--- FIXED: using .image
                       category: product.category,
                     }}
                     index={index}
